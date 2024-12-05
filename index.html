@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stripe Payment</title>
+  <script src="https://js.stripe.com/v3/"></script> <!-- Stripe.js -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 20%;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Checkout</h1>
+  <button id="checkout-button">Pay €4.70</button>
+
+  <script>
+    const stripe = Stripe('pk_live_51QRcajECUE2Pye2Zjn9rTqhuZr7jjIQ5EaDI9pPl7JAPzowgt2MDkCQtdhCEtcwLMulVqG5u1aKAhgLYTZeRxFsH003uxm0Jh3'); // Replace with your actual publishable key
+
+    document.getElementById('checkout-button').addEventListener('click', () => {
+      fetch('/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to create checkout session');
+        }
+        return response.json();
+      })
+      .then(data => {
+        stripe.redirectToCheckout({ sessionId: data.sessionId });
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Something went wrong. Please try again.');
+      });
+    });
+  </script>
+</body>
+</html>
